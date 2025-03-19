@@ -1,12 +1,25 @@
-const jsonServer = require("json-server");
-const server = jsonServer.create();
-const router = jsonServer.router("db.json");
-const middlewares = jsonServer.defaults();
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
 
-server.use(middlewares);
-server.use(router);
+const app = express();
+app.use(express.json());
 
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`JSON Server is running on port ${PORT}`);
+const dbPath = path.join(__dirname, "db.json");
+
+// Read JSON data
+const getData = () => {
+  return JSON.parse(fs.readFileSync(dbPath, "utf8"));
+};
+
+// Serve users data
+app.get("/users", (req, res) => {
+  const data = getData();
+  res.json(data.users);
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
